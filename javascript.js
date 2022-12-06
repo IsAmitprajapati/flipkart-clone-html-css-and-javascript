@@ -1,144 +1,134 @@
-import { featureProductNav } from "./Data/featureProductNav.js"
-import { imageSlider } from "./Data/imageSlider.js"
-import { electronicsProductData } from "./Data/electronicProduct.js"
+import { todayDeal } from "./todayDeal.js"
 
-let input_search = document.getElementById("search_input")
-let form_search = document.getElementById("search_form")
-let recent_SearchEl = document.querySelector(".recent_Search")
-
-let recentArray = ["mobile", "phone"]
-form_search.addEventListener("submit", (e) => {
-    e.preventDefault()
-    recentArray.unshift(input_search.value)
-    console.log(recentArray)
-    renderRecent()
-})
+let slideBtnLeft = document.getElementById("slide-btn-left")
+let slideBtnRight = document.getElementById("slide-btn-right")
+let imgItem = document.querySelectorAll(".image-item")
 
 
-function renderRecent() {
-    let recent_Search_html = ''
-    recentArray.forEach(el => {
-        recent_Search_html += `
-        <div class="recent_list">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <p>${el}</p>
-        </div>
-    `
-    })
+console.log(imgItem.length - 1)
 
-    recent_SearchEl.innerHTML = recent_Search_html;
-}
-renderRecent()
+let startSlider = 0
+let endSlider = (imgItem.length - 1) * 100  // 700
 
+slideBtnLeft.addEventListener("click", handleLeftBtn)
 
-/**********feature product js***********/
-let featureProduct_listEl = document.querySelector(".featureProduct_list")
-let featureProductListHTML = ''
-// console.log(featureProductNav)
-
-featureProductNav.forEach(el => {
-    featureProductListHTML += `
-        <div class="featureProduct_item">
-            <a href="${el.link}">
-                <div class="featureProduct_image">
-                    <img src="${el.img}" />
-                </div>
-                <p class="featureProduct_name">
-                    ${el.name}
-
-                  ${el.subNavigation ? `<i class="fa-solid fa-angle-down featureProduct_icon_more"></i>` : ""}   
-                </p>
-            </a>
-        </div>
-    `
-})
-featureProduct_listEl.innerHTML = featureProductListHTML
-// console.log(featureProductListHTML)
-
-
-/*******************image Slider********************* */
-let imageSliderListEl = document.querySelector(".imageSliderList")
-let imageSliderListHTML = ''
-console.log(imageSlider)
-
-
-imageSlider.forEach(el => {
-    imageSliderListHTML += `
-    <div class="imageSliderItem">
-        <a href="${el.link}">
-            <img src="${el.img}" />
-        </a>
-    </div>
-    `
-})
-imageSliderListEl.innerHTML = imageSliderListHTML;
-
-let preve_imageBtnEl = document.getElementById("preve_imageBtn")
-let next_imageBtn = document.getElementById("next_imageBtn")
-let start = 0;
-let end = -400;
-
-preve_imageBtnEl.addEventListener("click", handlePreveImage)
-next_imageBtn.addEventListener("click", handleNextImage)
-
-function handlePreveImage() {
-    let imageallList = document.querySelectorAll(".imageSliderItem")
-    console.log(imageallList)
-    if (start < 0)
-        start += 100
-    imageallList.forEach(el => {
-        el.style.transform = `translateX(${start}%)`
-    })
-
-}
-function handleNextImage() {
-    let imageallList = document.querySelectorAll(".imageSliderItem")
-    console.log(imageallList)
-    if (start > end)
-        start -= 100
-    imageallList.forEach(el => {
-        el.style.transform = `translateX(${start}%)`
+function handleLeftBtn() {
+    if (startSlider < 0) {
+        startSlider = startSlider + 100;
+    }
+    imgItem.forEach(element => {
+        element.style.transform = `translateX(${startSlider}%)`;
     })
 }
 
-function renderImageSlider() {
-    if (start > end) {
-        handleNextImage()
+slideBtnRight.addEventListener("click", handleRightBtn)
+
+function handleRightBtn() {
+    if (startSlider >= -endSlider + 100) {
+        startSlider = startSlider - 100;
+    }
+    imgItem.forEach(element => {
+        element.style.transform = `translateX(${startSlider}%)`;
+    })
+
+}
+//render automatic
+function renderSlideAuto() {
+
+    if (startSlider >= -endSlider + 100) {
+        handleRightBtn()
     }
     else {
-        start = 100
+        startSlider = 0;
     }
 }
-
-setInterval(renderImageSlider, 5000)
-
+setInterval(renderSlideAuto, 2000);
 
 
-/*********************************bestofElctronic_product_item */
-let bestofElctronic_product_itemEl = document.querySelector(".bestofElctronic_product_item")
-let bestofElectornicProduct_html = ""
 
-console.log(electronicsProductData)
-electronicsProductData.forEach(el => {
-    bestofElectornicProduct_html += `
-    <div class="BestofElectronic_item">
-        <a href="${el.link}">
 
-        <div class="bestOfElectornic_image_Product">
-            <img
-                src="${el.img}" />
-        </div>
-        <div class="bestofElectronicmoreOption">
-            <p class="bestofElectornicProduct_name">${el.productName}</p>
-            <p class="bestofElecronic_discount">${el.discount}</p>
-            <p class="bestofElectronic_brand">${el.brand}</p>
-        </div>
-        </a>
+/***** sidebar navigation  */
+const sidebarNavigationEl = document.getElementById("sidebar-container-navigation-id")
+const sidebarOpenNavigationEl = document.getElementById("open-nav-sidebar")
+const sidebarCloseNavigationEl = document.getElementById("sidebar-navigation-close")
 
-    </div>
-    
-    `
+
+//  console.log(sidebarNavigationEl)
+
+sidebarOpenNavigationEl.addEventListener("click", () => {
+    sidebarNavigationEl.classList.toggle("slidebar-show")
+})
+sidebarCloseNavigationEl.addEventListener("click", () => {
+    sidebarNavigationEl.classList.toggle("slidebar-show")
 })
 
-bestofElctronic_product_itemEl.innerHTML = bestofElectornicProduct_html
+
+
+
+//today deals 
+console.log(todayDeal)
+let todayDealProductListEl = document.querySelector(".today_deals_product_list")
+console.log(todayDealProductListEl)
+
+let todayDealProductHTML = ""
+
+let todayDeallength = todayDeal.length
+
+for (let i = 0; i < todayDeallength; i++) {
+    // console.log(todayDeal[i])
+
+    todayDealProductHTML += `
+        <div class="today_deals_product_item">
+                <div class="todayDeals_product_image">
+                    <img src=${todayDeal[i].img} />
+                </div>
+            
+
+
+            <div class="discount_Contaienr">
+                <a href="#">Up to ${todayDeal[i].discount}% off</a>
+                <a href="#">${todayDeal[i].DealOfDay}</a>
+            </div>
+            <p>${todayDeal[i].desc}</p>
+        </div>
+    `
+}
+
+todayDealProductListEl.innerHTML = todayDealProductHTML
+//  console.log(todayDealProductHTML)
+
+let today_deal_btn_prevEl = document.getElementById("today_deal_btn_prev")
+let today_deal_btn_nextEl = document.getElementById("today_deal_btn_next")
+let today_deals_product_itemEl = document.querySelectorAll(".today_deals_product_item")
+
+let startProduct = 0;
+
+
+today_deal_btn_prevEl.addEventListener("click", () => {
+
+   
+    if(startProduct < 0){
+        startProduct += 500
+    }
+    if(startProduct > -2000){
+        today_deals_product_itemEl.forEach(el =>{
+            el.style.transform = `translateX(${startProduct}%)`
+        })
+    }
+
+})
+
+today_deal_btn_nextEl.addEventListener("click", () => {
+    // alert("next")
+    
+    if(startProduct > -1500){
+        startProduct -= 500
+    }
+
+    today_deals_product_itemEl.forEach(el =>{
+        el.style.transform = `translateX(${startProduct}%)`
+    })
+    
+    
+})
 
